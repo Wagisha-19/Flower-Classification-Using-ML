@@ -243,5 +243,5 @@ evaluate(model, val_dl)
 epochs = 10
 opt_func_1 = torch.optim.Adam
 lr_1 = 0.001
-%%time
+%%time 
 try2 = fit(epochs, lr_1, model, train_dl, val_dl, opt_func_1)
