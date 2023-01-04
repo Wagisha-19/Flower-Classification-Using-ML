@@ -1,0 +1,99 @@
+!pip install opencv-python
+!pip install numpy==1.17.3
+import os
+import cv2
+from google.colab.patches import cv2_imshow as disp
+import numpy as np
+import torch
+import torchvision
+import tarfile
+import torchvision
+from torch.utils.data import random_split
+from torchvision.datasets import ImageFolder
+from torchvision import transforms
+from torchvision.transforms import ToTensor
+from torch.utils.data.dataloader import DataLoader
+import torch.nn as nn
+from torchvision.utils import make_grid
+import torchvision.models as models
+import torch.nn.functional as F
+from imutils import paths
+import matplotlib.pyplot as plt
+import time
+%matplotlib inline
+from sklearn.preprocessing import LabelBinarizer
+datapath= "/content/sample_data/flowers"
+flowers= set(["daisy","dandelion","rose","sunflower","tulip"])
+print(datapath)
+print("Image is being loaded")
+pathToImages = list(paths.list_images(datapath))
+data=[]
+labels=[]
+
+for images in pathToImages:
+  labels = images.split(os.path.sep)[-2]
+  if labels not in flowers:
+    continue
+    image = cv2.imread(images)
+    image = cv2.cvtcolor(image,cv2.COLOR_BGR2RBG)
+    image = cv2.resize(image,(244,244))
+    data.append(image)
+    labels.append(label)
+i=1
+for imgPATH in pathToImages:
+  img= cv2.imread(imgPATH)
+  disp(img)
+  time.sleep(3)
+  cv2.waitKey(0)
+!pip install tensorflow
+import random
+import numpy as np
+import tensorflow as tf
+import cv2
+import os
+
+from random import shuffle
+from tqdm import tqdm
+
+train_dir = '/content/sample_data/flowers'
+test_dir = 'test'
+
+img_size = 128
+
+def label_folder(folders):
+    if folders == 'tulip': return [1,0,0,0,0]
+    elif folders == 'rose': return [0,1,0,0,0]
+    elif folders == 'dandelion': return [0,0,1,0,0]
+    elif folders == 'daisy': return [0,0,0,1,0]
+    elif folders == 'sunflower': return [0,0,0,0,1]
+
+def create_train_data():
+    training_data = []
+    dirs = os.listdir( train_dir )
+    for folders in dirs:
+        label = label_folder(folders)
+        req_train_dir = os.path.join(train_dir,folders)
+        for img in tqdm(os.listdir(req_train_dir)):
+            path = os.path.join(req_train_dir,img)
+            img = cv2.imread(path,cv2.IMREAD_GRAYSCALE)
+            img = cv2.resize(img, (img_size,img_size))
+            training_data.append([np.array(img),np.array(label)])
+    shuffle(training_data)
+    np.save('flower_train_data.npy', training_data)
+    return training_data
+
+def process_test_data():
+    testing_data = []
+    for img in tqdm(os.listdir(test_dir)):
+        path = os.path.join(test_dir,img)
+        img_num = img.split('.')[0]  #image id
+        img = cv2.imread(path,cv2.IMREAD_GRAYSCALE)
+        img = cv2.resize(img, (img_size,img_size))
+        testing_data.append([np.array(img), img_num])
+        
+    shuffle(testing_data)
+    np.save('flower_test_data.npy', testing_data)
+    return testing_data
+
+train_data = create_train_data()
+#test_data = process_test_data()
